@@ -6,7 +6,7 @@
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 09:27:27 by sezequie          #+#    #+#             */
-/*   Updated: 2024/06/03 10:22:21 by sezequie         ###   ########.fr       */
+/*   Updated: 2024/06/03 10:50:47 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ char	*pathfinder(char **envp, char *command)
 	i = 0;
 	while (paths[i])
 	{
-		str = triple_strjoin(paths[i++], "/", command);
+		str = path_builder(paths[i++], "/", command);
 		if (!access(str, F_OK))
 			break ;
 		free(str);

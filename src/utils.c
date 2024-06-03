@@ -6,7 +6,7 @@
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 09:27:15 by sezequie          #+#    #+#             */
-/*   Updated: 2024/06/03 10:18:24 by sezequie         ###   ########.fr       */
+/*   Updated: 2024/06/03 10:52:15 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,15 @@ void	error_output(int error)
 	if (error == 6)
 		perror("Error related to dup2");
 	exit(1);
+}
+
+char	*path_builder(char *s1, char *s2, char *s3)
+{
+	char	*str;
+	char	*tmp;
+
+	tmp = ft_strjoin(s1, s2);
+	str = ft_strjoin(tmp, s3);
+	free(tmp);
+	return (str);
 }
