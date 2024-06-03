@@ -6,7 +6,7 @@
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 14:51:50 by sezequie          #+#    #+#             */
-/*   Updated: 2024/05/31 14:54:47 by sezequie         ###   ########.fr       */
+/*   Updated: 2024/06/03 09:56:24 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,11 @@
 # include "../Libft/libft.h"
 # include "../Libft/Printf/ft_printf.h"
 
-char	*path_find(char *cmd, char **evnp);
-void	execute(char *av, char **envp);
-void	ft_error(char *msg);
-void	main_process(char **av, char **envp, int *fd);
-void	fork_process(char **av, char **envp, int *fd);
+void			errorhandling(int error);
+void			free_list(char **list);
+char			*pathfinder(char **envp, char *command);
+void			pipex(char **av, char **envp);
+void			firstcommand(char **envp, char **av, int *pipefd);
+void			secondcommand(char **envp, char **av, int *pipefd);
 
 #endif

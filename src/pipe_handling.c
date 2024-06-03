@@ -1,47 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   pipe_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/31 09:09:32 by sezequie          #+#    #+#             */
-/*   Updated: 2024/06/03 10:24:14 by sezequie         ###   ########.fr       */
+/*   Created: 2024/06/03 09:27:27 by sezequie          #+#    #+#             */
+/*   Updated: 2024/06/03 10:22:21 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	main(int argc, char **argv, char **envp)
+char	*pathfinder(char **envp, char *command)
 {
-	if (argc == 5)
-		pipex(argv, envp);
-	else
-		error_output(0);
-	return (0);
-}
+	int		i;
+	char	**paths;
+	char	*str;
 
-void	pipex(char **argv, char **envp)
-{
-	int	forkid;
-	int	pipefd[2];
-
-	if (pipe(pipefd))
-		error_output(1);
-	forkid = fork();
-	if (forkid < 0)
-		error_output(2);
-	if (!forkid)
-		cmd_one(envp, argv, pipefd);
-	wait(0);
-	forkid = fork();
-	if (forkid < 0)
-		error_output(2);
-	if (!forkid)
-		cmd_two(envp, argv, pipefd);
-	close(pipefd[1]);
-	close(pipefd[0]);
-	wait(0);
+	if (!command || !access(command, F_OK))
+		return (command);
+	i = 0;
+	while (ft_strncmp(envp[i], "PATH", 4))
+		i++;
+	paths = ft_split(envp[i] + 5, ':');
+	i = 0;
+	while (paths[i])
+	{
+		str = triple_strjoin(paths[i++], "/", command);
+		if (!access(str, F_OK))
+			break ;
+		free(str);
+		str = NULL;
+	}
+	if (!str)
+		error_output(5);
+	free_list(paths);
+	return (str);
 }
 
 void	cmd_one(char **envp, char **argv, int *pipefd)
@@ -87,4 +82,3 @@ void	cmd_two(char **envp, char **argv, int *pipefd)
 	free(str);
 	exit(4);
 }
-// Ex: ./pipex file1 cmd1 cmd2 file2
