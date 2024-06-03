@@ -6,7 +6,7 @@
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 09:09:32 by sezequie          #+#    #+#             */
-/*   Updated: 2024/06/03 10:24:14 by sezequie         ###   ########.fr       */
+/*   Updated: 2024/06/03 11:32:37 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,49 +42,5 @@ void	pipex(char **argv, char **envp)
 	close(pipefd[1]);
 	close(pipefd[0]);
 	wait(0);
-}
-
-void	cmd_one(char **envp, char **argv, int *pipefd)
-{
-	int		infile;
-	char	**argvsplit;
-	char	*str;
-
-	close(pipefd[0]);
-	infile = open(argv[1], O_RDONLY);
-	if (infile < 0)
-		error_output(3);
-	if (dup2(infile, STDIN_FILENO) < 0)
-		error_output(6);
-	if (dup2(pipefd[1], STDOUT_FILENO) < 0)
-		error_output(6);
-	argvsplit = ft_split(argv[2], ' ');
-	str = pathfinder(envp, argvsplit[0]);
-	execve(str, argvsplit, envp);
-	free_list(argvsplit);
-	free(str);
-	exit(4);
-}
-
-void	cmd_two(char **envp, char **argv, int *pipefd)
-{
-	int		outfile;
-	char	**argvsplit;
-	char	*str;
-
-	close(pipefd[1]);
-	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (outfile < 0)
-		error_output(4);
-	if (dup2(outfile, STDOUT_FILENO) < 0)
-		error_output(6);
-	if (dup2(pipefd[0], STDIN_FILENO) < 0)
-		error_output(6);
-	argvsplit = ft_split(argv[3], ' ');
-	str = pathfinder(envp, argvsplit[0]);
-	execve(str, argvsplit, envp);
-	free_list(argvsplit);
-	free(str);
-	exit(4);
 }
 // Ex: ./pipex file1 cmd1 cmd2 file2
