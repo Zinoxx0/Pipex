@@ -1,29 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   multi_pipe_handling.c                              :+:      :+:    :+:   */
+/*   multi_pipex.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 06:58:43 by sezequie          #+#    #+#             */
-/*   Updated: 2024/06/12 08:06:12 by sezequie         ###   ########.fr       */
+/*   Updated: 2024/06/12 09:31:07 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-void pipe_closer(int pipes[][2], int num_pipes)
-{
-	int i;
-
-	i = 0;
-	while (i < num_pipes)
-	{
-		close(pipes[i][0]);
-		close(pipes[i][1]);
-		i++;
-	}
-}
 
 void	pipe_opener(int num_pipes, int pipes[][2])
 {
@@ -46,14 +33,52 @@ void	pipe_opener(int num_pipes, int pipes[][2])
 	}
 }
 
+void pipe_closer(int pipes[][2], int num_pipes)
+{
+	int i;
+
+	i = 0;
+	while (i < num_pipes)
+	{
+		close(pipes[i][0]);
+		close(pipes[i][1]);
+		i++;
+	}
+}
+
+void first_child(char **argv, int pipe[])
+{
+	int infile = open(argv[1], O_RDONLY);
+	if (infile < 0)
+		error_output(3);
+	dup2(infile, STDIN_FILENO);
+	close(pipe[0]);
+	dup2(pipe[1], STDOUT_FILENO);
+}
+
+void last_child(char **argv, int pipe[])
+{
+	int outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (outfile < 0)
+		error_output(4);
+	dup2(outfile, STDOUT_FILENO);
+	close(pipe[1]);
+}
+
+void middle_child(int in_pipe[], int out_pipe[])
+{
+	dup2(in_pipe[0], STDIN_FILENO);
+	dup2(out_pipe[1], STDOUT_FILENO);
+}
+
 void multi_pipe(char **argv, char **envp)
 {
 	int i = 0;
-	int num_pipes = argc - 5; // Calculate number of pipes from arguments
-	int pipes[num_pipes][2];  // Array of pipe descriptors
+	int num_pipes = argc - 5;
+	int pipes[num_pipes][2];
 
 	pipe_opener(num_pipes, pipes);
-	while (i <= num_pipes)
+	while (++i <= num_pipes)
 	{
 		int forkid = fork();
 
@@ -66,30 +91,11 @@ void multi_pipe(char **argv, char **envp)
 		if (forkid == 0)
 		{
 			if (i == 0)
-			{
-				// First child
-				int infile = open(argv[1], O_RDONLY);
-				if (infile < 0)
-					error_output(3);
-				dup2(infile, STDIN_FILENO);
-				close(pipes[0][0]);				  // Close unused read end of first pipe
-				dup2(pipes[0][1], STDOUT_FILENO); // Redirect stdout to first pipe
-			}
+				first_child(argv, pipes[0]);
 			else if (i == num_pipes)
-			{
-				// Last child
-				int outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-				if (outfile < 0)
-					error_output(4);
-				dup2(outfile, STDOUT_FILENO);
-				close(pipes[num_pipes - 1][1]); // Close unused write end of last pipe
-			}
+				last_child(argv, pipes[num_pipes - 1]);
 			else
-			{
-				// Intermediate child
-				dup2(pipes[i - 1][0], STDIN_FILENO); // Read from previous pipe
-				dup2(pipes[i][1], STDOUT_FILENO);	 // Write to next pipe
-			}
+				middle_child(pipes[i - 1], pipes[i]);
 			pipe_closer(pipes, num_pipes);
 			// Execute the command using argv and envp
 			char *command = pathfinder(envp, argv[2 + i]);
@@ -100,11 +106,18 @@ void multi_pipe(char **argv, char **envp)
 			exit(1); // Exit child process on error
 		}
 		else
-		{
-			wait(NULL); // Wait for child to finish
-		}
-		i++; // Increment counter after handling child process
+			wait(NULL);
 	}
 	pipe_closer(pipes, num_pipes);
 }
+
+int	main(int argc, char **argv, char **envp)
+{
+	if (strlen(argv) >= 5)
+		pipex(argv, envp);
+	else
+		error_output(0);
+	return (0);
+}
+
 // Ex: ./pipex file1 cmd1 cmd2 cmd3 file2
