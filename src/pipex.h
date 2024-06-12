@@ -6,7 +6,7 @@
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 14:51:50 by sezequie          #+#    #+#             */
-/*   Updated: 2024/06/03 11:31:23 by sezequie         ###   ########.fr       */
+/*   Updated: 2024/06/12 06:59:15 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <fcntl.h>
 # include "../Libft/libft.h"
 # include "../Libft/Printf/ft_printf.h"
+# include "bonus.h"
 
 void			pipex(char **av, char **envp);
 void			cmd_one(char **envp, char **argv, int *pipefd);

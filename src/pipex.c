@@ -6,7 +6,7 @@
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 09:09:32 by sezequie          #+#    #+#             */
-/*   Updated: 2024/06/03 11:32:37 by sezequie         ###   ########.fr       */
+/*   Updated: 2024/06/12 06:49:38 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,21 +26,26 @@ void	pipex(char **argv, char **envp)
 	int	forkid;
 	int	pipefd[2];
 
-	if (pipe(pipefd))
-		error_output(1);
-	forkid = fork();
-	if (forkid < 0)
-		error_output(2);
-	if (!forkid)
-		cmd_one(envp, argv, pipefd);
-	wait(0);
-	forkid = fork();
-	if (forkid < 0)
-		error_output(2);
-	if (!forkid)
-		cmd_two(envp, argv, pipefd);
-	close(pipefd[1]);
-	close(pipefd[0]);
-	wait(0);
+	if (strlen(argv) == 5)
+	{
+		if (pipe(pipefd))
+			error_output(1);
+		forkid = fork();
+		if (forkid < 0)
+			error_output(2);
+		if (!forkid)
+			cmd_one(envp, argv, pipefd);
+		wait(0);
+		forkid = fork();
+		if (forkid < 0)
+			error_output(2);
+		if (!forkid)
+			cmd_two(envp, argv, pipefd);
+		close(pipefd[1]);
+		close(pipefd[0]);
+		wait(0);
+	}
+	else
+		multi_pipe(argv, envp);
 }
 // Ex: ./pipex file1 cmd1 cmd2 file2
