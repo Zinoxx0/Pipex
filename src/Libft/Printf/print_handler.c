@@ -1,22 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   bonus.h                                            :+:      :+:    :+:   */
+/*   print_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/12 06:52:53 by sezequie          #+#    #+#             */
-/*   Updated: 2024/08/05 12:14:26 by sezequie         ###   ########.fr       */
+/*   Created: 2023/10/15 20:23:03 by sezequie          #+#    #+#             */
+/*   Updated: 2024/08/05 12:22:14 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BONUS_H
-# define BONUS_H
+#include "ft_printf.h"
 
-# include "../pipex.h"
+void	fputchar(char chr, int *len)
+{
+	write(1, &chr, 1);
+	(*len)++;
+}
 
-void			multi_pipe(char **argv, char **envp);
-void			pipe_opener(int num_pipes, int pipes[][2]);
-void			pipe_closer(int pipes[][2], int num_pipes);
+void	fputstr(char *args, int *len)
+{
+	size_t	i;
 
-#endif
+	i = 0;
+	if (args == 0)
+	{
+		write(1, "(null)", 6);
+		(*len) += 6;
+		return ;
+	}
+	while (args[i] != '\0')
+	{
+		fputchar(args[i], len);
+		i++;
+	}
+}

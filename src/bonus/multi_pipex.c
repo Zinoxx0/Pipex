@@ -6,11 +6,11 @@
 /*   By: sezequie <sezequie@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 06:58:43 by sezequie          #+#    #+#             */
-/*   Updated: 2024/06/12 09:31:07 by sezequie         ###   ########.fr       */
+/*   Updated: 2024/08/05 12:14:48 by sezequie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../pipex.h"
 
 void	pipe_opener(int num_pipes, int pipes[][2])
 {
